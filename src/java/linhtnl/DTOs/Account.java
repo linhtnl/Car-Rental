@@ -11,12 +11,22 @@ package linhtnl.DTOs;
  * @author ASUS
  */
 public class Account {
-    private String email, password,name,phone,address,status;
+    private String email, password,name,phone,address,status,confirmPass;
     private String accountError, password_Error;
-
+    
     public Account() {
     }
 
+    public Account(String email, String password, String name, String phone, String address,  String confirmPass) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.phone = phone;
+        this.address = address;
+      
+        this.confirmPass = confirmPass;
+    }
+    
     public String getEmail() {
         return email;
     }
@@ -27,6 +37,14 @@ public class Account {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setConfirmPass(String confirmPass) {
+        this.confirmPass = confirmPass;
+    }
+
+    public String getConfirmPass() {
+        return confirmPass;
     }
 
     public void setPassword(String password) {

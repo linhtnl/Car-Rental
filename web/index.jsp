@@ -113,7 +113,6 @@
                     <ul class="navbar-nav">
                         <li class="nav-item active">
                             <button type="button" class="btn btn-link nav-link" onClick="Home()" >Home</button>
-                            <!--<a href="index.jsp" class="nav-link">Home</a>-->
                         </li>
                     </ul>
                     <ul class="nav navbar-nav ml-auto">
@@ -170,91 +169,51 @@
                         <div class="col-md-3 col-sm-6">
                             <div class="product-grid" style="margin-bottom: 5%">
                                 <div class="product-image" >      
-                                    <img class="pic-1" height="150"  width="350" src="images/marcus-p-oUBjd22gF6w-unsplash.jpg">
-                                    <b>Color: </b> ${dto.color}<br>
-                                    <b>Year: </b> ${dto.year} <br> 
-                                    <b>Category: </b> 
-                                    <c:forEach items="${sessionScope.listCategory}" var="cate">
-                                        <c:if test="${cate.id eq dto.categoryId}">
-                                            ${cate.name}
-                                        </c:if>
-                                    </c:forEach>
-                                    <br>
-
-                                    <b>Quantity: </b> ${dto.quantity}<br>  
-
-                                    <ul class="social">
-
-                                        <!--<li><a data-tip="Quick View" ><i class="fa fa-search"></i></a></li>-->                         
-                                        <li><a href="" data-tip="Add to Cart"><i class="fa fa-shopping-cart"></i></a></li>
+                                    <img class="pic-1" height="150"  width="350" src="images/marcus-p-oUBjd22gF6w-unsplash.jpg">                               
+                                    <ul class="social">                         
+                                        <li><a href="login.jsp" data-tip="Add to Cart"><i class="fa fa-shopping-cart"></i></a></li>
                                         <li>
-                                            <!-- Button trigger modal -->
-                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-                                                Launch demo modal
-                                            </button>
-
-
-
-
-                                            <!-- Modal -->
-                                            <!--                                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                                                            <div class="modal-dialog" role="document">
-                                                                                                <div class="modal-content">
-                                                                                                    <div class="modal-header">
-                                                                                                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                                                            <span aria-hidden="true">&times;</span>
-                                                                                                        </button>
-                                                                                                    </div>
-                                                                                                    <div class="modal-body">
-                                                                                                        ...
-                                                                                                    </div>
-                                                                                                    <div class="modal-footer">
-                                                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                                                        <button type="button" class="btn btn-primary">Save changes</button>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>-->
+                                            <a data-tip="Quick View" data-toggle="modal" data-target="#myModal${counter.count}"><i class="fa fa-search"></i></a>
                                         </li>
                                     </ul>
 
-                                </div>
-                                <ul class="rating">
-                                    <input type="hidden" name="rate" value="${dto.rateAvg}"/>
-                                    <c:set var="remain" value="${10-dto.rateAvg}"/>
-                                    <c:forEach begin="1" end="${dto.rateAvg}">
-                                        <li class="fa fa-star"></li>
-                                        </c:forEach>
-                                        <c:forEach begin="1" end="${remain}">
-                                        <li class="fa fa-star disable"></li>
-                                        </c:forEach>
-                                </ul>
+                                </div>                              
                                 <div class="product-content">
-                                    <h3 class="title"><a href="">${dto.name}</a></h3>
-                                    <div class="price">$${dto.price}
-
-                                    </div>
+                                    <h3 class="title"><a href="">${dto.carName}</a></h3>
 
                                 </div>
                             </div>
                         </div>
 
                         <!-- Modal -->
-                        <div id="myModal" class="modal fade" role="dialog">
+                        <div id="myModal${counter.count}" class="modal fade" role="dialog">
                             <div class="modal-dialog">
 
                                 <!-- Modal content-->
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">Modal Header</h4>
+                                        <h5 class="modal-title">${dto.carName}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
                                     </div>
-                                    <div class="modal-body">
-                                        <p>Some text in the modal.</p>
+                                    <div class="modal-body">                  
+                                        <b>Year: </b> ${dto.year} <br> 
+                                        <b>Category: </b> 
+                                        <c:forEach items="${sessionScope.listCategory}" var="cate">
+                                            <c:if test="${cate.id eq dto.categoryID}">
+                                                ${cate.name}
+                                            </c:if>
+                                        </c:forEach>
+                                        <br>
+                                         <b>Quantity: </b> ${dto.size} <br> 
+                                        
+
+                                        
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                        <a type="button" href="login.jsp" class="btn btn-primary"><font color="white">Rent</font></a>
+                                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                     </div>
                                 </div>
 
@@ -342,6 +301,12 @@
             document.forms['index'].submit();
         }
         function Search() {
+            var dateRent = document.forms['index'].dateRent.value.replaceAll("-","");
+            var dateReturn = document.forms['index'].dateReturn.value.replaceAll("-","");
+            if(parseInt(dateRent)>parseInt(dateReturn)) {
+                alert("Ngày thuê không thể lớn hơn ngày trả về");
+                return;
+            }         
             document.forms['index'].action.value = 'Search';
             document.forms['index'].submit();
         }

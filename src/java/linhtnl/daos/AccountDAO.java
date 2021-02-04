@@ -8,6 +8,8 @@ package linhtnl.daos;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import linhtnl.DTOs.Account;
 import linhtnl.db.LinhConnection;
 
@@ -33,25 +35,72 @@ public class AccountDAO {
         }
     }
 
+    public boolean updateStatus(String email) throws Exception {
+        boolean check = true;
+        try {
+            String sql = "update Account set status='Active' where email ='" + email + "'";
+            con = LinhConnection.getConnection();
+            pst = con.prepareStatement(sql);
+            check = pst.executeUpdate() == 1 ? true : false;
+        } finally {
+            closeConnection();
+        }
+        return check;
+    }
+
+    public boolean createNew(Account acc) throws Exception {
+        boolean check = true;
+        try {
+            SimpleDateFormat f = new SimpleDateFormat("yyyy/MM/dd");
+            String date = f.format(Calendar.getInstance().getTime());
+            String sql = "Insert INTO Account(email,phone,name,address,createDate,status,password)\n"
+                    + "values('" + acc.getEmail() + "','" + acc.getPhone() + "','" + acc.getName() + "','" + acc.getAddress() + "','" + date + "','New','" + acc.getPassword() + "')";
+            con = LinhConnection.getConnection();
+            pst = con.prepareStatement(sql);
+            check = pst.executeUpdate() == 1 ? true : false;
+        } finally {
+            closeConnection();
+        }
+        return check;
+    }
+
+    public boolean emailExist(String email) throws Exception {
+        boolean check = false;
+        try {
+            String sql = "select * from Account where email='" + email + "'";
+            con = LinhConnection.getConnection();
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                check = true;
+            }
+        } finally {
+            closeConnection();
+        }
+        return check;
+    }
+
     public Account getAccount(String email) throws Exception {
         Account acc = new Account();
         try {
             String sql = "select phone, name, address, status \n"
                     + "from account\n"
                     + "where email = ? ";
-            con =  LinhConnection.getConnection();
+            con = LinhConnection.getConnection();
             pst = con.prepareStatement(sql);
             pst.setString(1, email);
             rs = pst.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 String phone = rs.getString("phone");
                 String name = rs.getString("name");
                 String address = rs.getString("address");
                 String status = rs.getString("status");
-              
-                acc.setPhone(phone);acc.setName(name);
-                acc.setAddress(address);acc.setStatus(status);
-               
+
+                acc.setPhone(phone);
+                acc.setName(name);
+                acc.setAddress(address);
+                acc.setStatus(status);
+
             }
         } finally {
             closeConnection();
@@ -66,7 +115,7 @@ public class AccountDAO {
         int check = -1;
         try {
             System.out.println(email);
-            String sql = "Select email, password from Account where email = '"+email+"'";
+            String sql = "Select email, password from Account where email = '" + email + "'";
             con = LinhConnection.getConnection();
             pst = con.prepareStatement(sql);
             rs = pst.executeQuery();

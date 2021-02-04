@@ -7,25 +7,28 @@ package linhtnl.controllers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Vector;
+import java.net.PasswordAuthentication;
+import java.util.Properties;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.mail.Session;
 import linhtnl.DTOs.Account;
-import linhtnl.DTOs.CarByName;
-import linhtnl.DTOs.CarDTO;
-import linhtnl.DTOs.SearchDTO;
-import linhtnl.daos.CarDAO;
+import linhtnl.daos.AccountDAO;
 import linhtnl.util.Path;
-import linhtnl.util.PathUser;
 
 /**
  *
  * @author ASUS
  */
-public class PagingSvl extends HttpServlet {
+public class RegisterSvl extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +47,10 @@ public class PagingSvl extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet PagingSvl</title>");
+            out.println("<title>Servlet RegisterSvl</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet PagingSvl at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet RegisterSvl at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -80,56 +83,68 @@ public class PagingSvl extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //processRequest(request, response);
-        String url = Path.ERROR;
+        String url = Path.REGISTER;
         try {
             HttpSession session = request.getSession();
-            Account acc = (Account) session.getAttribute("ACC");
-            int pageNum = Integer.parseInt(request.getParameter("pageNum"));
-            CarDAO dao = new CarDAO();
-            boolean flag = true; //Search 
-            SearchDTO dto = (SearchDTO) session.getAttribute("searchDTO");
-            if (dto == null) {
-                flag = false;//Khong SEARCH
-            }
-            Vector<CarByName> list = new Vector<>();
-            int totalPage = 0;
-            /*
-             1.Get list to display by pageNum
-             2.Get totalPage
-             3.Set URL
-             */
-
-            if (acc == null) { //For guest
-                if (flag) {//search
-                    list = dao.searchCar(pageNum, dto.getNameCar(), dto.getCategoryId(), dto.getCarNum(), dto.getDateRent(), dto.getDateReturn());
-                    totalPage = dao.getTotalSearchPage(dto.getNameCar(), dto.getCategoryId(), dto.getCarNum(), dto.getDateRent(), dto.getDateReturn());
-                } else {
-                    list = dao.getAllCar(pageNum);
-                    totalPage = dao.getTotalPageByCarName();
-                }
-                url = Path.INDEX;
+            String email = request.getParameter("email");
+            String pass = request.getParameter("password");
+            String phone = request.getParameter("phone");
+            String name = request.getParameter("name");
+            String confirm = request.getParameter("confirmPassword");
+            String addr = request.getParameter("address");
+            AccountDAO dao = new AccountDAO();
+            Account dto = new Account(email, pass, name, phone, addr, confirm);
+            if (dao.emailExist(email)) {
+                dto.setAccountError("This email is registered!");
+                session.setAttribute("ACC", dto);
             } else {
-                if (flag) {//search                       
-                    list = dao.searchCar(pageNum, dto.getNameCar(), dto.getCategoryId(), dto.getCarNum(), dto.getDateRent(), dto.getDateReturn());
-                    totalPage = dao.getTotalSearchPage(dto.getNameCar(), dto.getCategoryId(), dto.getCarNum(), dto.getDateRent(), dto.getDateReturn());
-                } else {//Khong search
-                    list = dao.getAllCar(pageNum);
-                    totalPage = dao.getTotalPageByCarName();
+                if (dao.createNew(dto)) {
+                    //Send avtive code to mail
+                    if (send(email)) {
+                        url = Path.WATING;
+                    }
                 }
-                url = Path.USER_HOME;
-                session.setAttribute("Url", PathUser.INDEX);
-
+                session.setAttribute("ACC", null);
             }
-            System.out.println("totalpage: " + totalPage);
-            session.setAttribute("totalPage", totalPage);
-            session.setAttribute("listCar", list);
-            session.setAttribute("pageNum", pageNum);
         } catch (Exception e) {
-            e.printStackTrace();
-            log("ERROR at PagingSvl: " + e.getMessage());
+            log("ERROR at RegisterSvl: " + e.getMessage());
         } finally {
             response.sendRedirect(url);
         }
+    }
+
+    private static boolean send(String to) {
+        boolean check = true;
+        //Get properties object    
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.socketFactory.port", "465");
+        props.put("mail.smtp.socketFactory.class",
+                "javax.net.ssl.SSLSocketFactory");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.port", "465");
+        //get Session   
+        Session session = Session.getDefaultInstance(props,
+                new javax.mail.Authenticator() {
+                    protected javax.mail.PasswordAuthentication getPasswordAuthentication() {
+                        return new javax.mail.PasswordAuthentication("linhtnl2000@gmail.com", "Cuxin123");
+                    }
+                });
+        //compose message    
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            message.setSubject("ACTIVE EMAIL");
+            message.setContent(" <h3>Click <a href=\"http://localhost:8084/CarRent/ActiveSvl?email=" + to + "\">here</a> to active</h3>", "text/html");
+            //send message  
+            Transport.send(message);
+            check = true;
+        } catch (MessagingException e) {
+            check = false;
+            throw new RuntimeException(e);
+
+        }
+        return check;
     }
 
     /**

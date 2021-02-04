@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import linhtnl.DTOs.Account;
+import linhtnl.DTOs.CarByName;
 import linhtnl.DTOs.CarDTO;
 import linhtnl.DTOs.CategoryDTO;
 import linhtnl.daos.CarDAO;
@@ -70,18 +71,18 @@ public class InitSvl extends HttpServlet {
         try {
             CarDAO dao = new CarDAO();
             CategoryDAO Cdao = new CategoryDAO();
-            Vector<CarDTO> list = new Vector<>();
             int totalPage = 0;
-            list = dao.getAllCar(1);
-            totalPage = dao.getTotalPage();
+            Vector<CarByName> list = dao.getAllCar(1);
+            totalPage = dao.getTotalPageByCarName();
             if (session.getAttribute("ACC") != null) {
                 url = Path.USER_HOME;
-            } 
+            }
             session.setAttribute("listCar", list);
             session.setAttribute("listCategory", Cdao.getAllCategory());
             session.setAttribute("pageNum", 1);
             session.setAttribute("totalPage", totalPage);
         } catch (Exception e) {
+            e.printStackTrace();
             log("ERROR at InitSvl: " + e.getMessage());
         } finally {
             response.sendRedirect(url);
@@ -106,17 +107,17 @@ public class InitSvl extends HttpServlet {
         try {
             CarDAO dao = new CarDAO();
             CategoryDAO Cdao = new CategoryDAO();
-            Vector<CarDTO> list = dao.getAllCar(1);
-            int totalPage = dao.getTotalPage();;
-            
+            Vector<CarByName> list = dao.getAllCar(1);
+            int totalPage = dao.getTotalPageByCarName();;
+
             if (session.getAttribute("ACC") != null) {
-                    url = Path.USER_HOME;           
+                url = Path.USER_HOME;
             }
             session.setAttribute("listCar", list);
             session.setAttribute("listCategory", Cdao.getAllCategory());
             session.setAttribute("pageNum", 1);
             session.setAttribute("totalPage", totalPage);
-
+            session.setAttribute("searchDTO", null);
         } catch (Exception e) {
             log("ERROR at InitSvl: " + e.getMessage());
         } finally {

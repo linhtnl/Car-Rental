@@ -7,28 +7,20 @@ package linhtnl.controllers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Vector;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import linhtnl.DTOs.Account;
-import linhtnl.DTOs.CarByName;
-import linhtnl.DTOs.CarDTO;
-import linhtnl.DTOs.SearchDTO;
+import linhtnl.daos.AccountDAO;
 import linhtnl.daos.CarDAO;
 import linhtnl.util.Path;
-import linhtnl.util.PathUser;
 
 /**
  *
  * @author ASUS
  */
-public class SearchSvl extends HttpServlet {
+public class ActiveSvl extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -47,10 +39,10 @@ public class SearchSvl extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SearchSvl</title>");
+            out.println("<title>Servlet ActiveSvl</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet SearchSvl at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet ActiveSvl at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -69,6 +61,25 @@ public class SearchSvl extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //processRequest(request, response);
+        String url = Path.ERROR;
+        try {
+            HttpSession session = request.getSession();
+            String email = request.getParameter("email");
+            AccountDAO dao = new AccountDAO();
+            if (dao.updateStatus(email)) {
+                CarDAO cDao = new CarDAO();
+                session.setAttribute("listCar", cDao.getAllCar(1));
+                session.setAttribute("totalPage", cDao.getTotalPageByCarName());
+                session.setAttribute("pageNum", 1);
+                url = Path.USER_HOME;
+                session.setAttribute("ACC", dao.getAccount(email));
+            }
+        } catch (Exception e) {
+            log("ERROR at ActiveSvl: " + e.getMessage());
+        } finally {
+            response.sendRedirect(url);
+        }
+
     }
 
     /**
@@ -82,44 +93,7 @@ public class SearchSvl extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String url = Path.ERROR;
-        try {
-            HttpSession session = request.getSession();
-            Account acc = (Account) session.getAttribute("ACC");
-            CarDAO dao = new CarDAO();     
-            Calendar cal = Calendar.getInstance();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");             
-            String carName = (request.getParameter("carName") == null) ? "" : request.getParameter("carName");       
-            String category = (request.getParameter("category") == null) ? ""  :request.getParameter("category");
-            int carNum = (request.getParameter("carNum") == null || request.getParameter("carNum").isEmpty()) ? 1 : Integer.parseInt(request.getParameter("carNum")) ;
-            String dateRent = (request.getParameter("dateRent")== null || request.getParameter("dateRent").isEmpty()) ? formatter.format(cal.getTime()) : request.getParameter("dateRent");
-            String dateReturn = (request.getParameter("dateReturn")== null || request.getParameter("dateReturn").isEmpty()) ? formatter.format(cal.getTime()) : request.getParameter("dateReturn");       
-            SearchDTO searchDTO = new SearchDTO(carName, category, carNum, dateReturn, dateRent);
-            session.setAttribute("searchDTO", searchDTO);
-            System.out.println(dateRent);
-            System.out.println(dateReturn);
-            Vector<CarByName> list = dao.searchCar(1, carName, category, carNum, dateRent, dateReturn);
-            /*
-             1. Get carName - Price from to - Category
-             2. Return list -> set listCar
-             3. Set pageNum
-             4. set totalPage
-             5. url
-             */
-            if (acc == null) {//for Guest
-                url = Path.INDEX;
-            } else {          
-                    url=Path.USER_HOME;          
-            }          
-            session.setAttribute("listCar", list);
-            session.setAttribute("pageNum", 1);
-            session.setAttribute("totalPage", dao.getTotalSearchPage(carName, category, carNum, dateRent, dateReturn));
-        } catch (Exception e) {
-            e.printStackTrace();
-            log("ERROR at SearchSvl: " + e.getMessage());
-        } finally {
-            response.sendRedirect(url);
-        }
+        //processRequest(request, response);
     }
 
     /**

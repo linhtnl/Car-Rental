@@ -13,7 +13,8 @@ package linhtnl.util;
 public class Path {
     public static final String USER_HOME = "user/home.jsp";
     public static final String INDEX = "index.jsp";
-  
+    public static final String REGISTER = "register.jsp";
+    public static final String WATING = "wating.jsp";
     public static final String ERROR = "error.jsp";
     public static final String LOGIN = "login.jsp";
     public static final String PAGING = "PagingSvl";

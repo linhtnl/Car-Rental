@@ -105,13 +105,9 @@ public class LoginSvl extends HttpServlet {
                     //--SET PAGE NUM
                     //--SET TOTAL PAGE
                     CarDAO cDao = new CarDAO();
-
-                    //DIVIDE ROLE
                     session.setAttribute("listCar", cDao.getAllCar(1));
-                    url = Path.USER_HOME;
-                    session.setAttribute("Url", PathUser.INDEX);
-                    session.setAttribute("totalPage", cDao.getTotalPage());
-
+                    url = Path.USER_HOME;                  
+                    session.setAttribute("totalPage", cDao.getTotalPageByCarName());
                     session.setAttribute("pageNum", 1);
 
                 }
@@ -123,6 +119,7 @@ public class LoginSvl extends HttpServlet {
             session.setAttribute("ACC", acc);
 
         } catch (Exception e) {
+            e.printStackTrace();
             log("ERROR at LoginSvl: " + e.getMessage());
         } finally {
             response.sendRedirect(url);

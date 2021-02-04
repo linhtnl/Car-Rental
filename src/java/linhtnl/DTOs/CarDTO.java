@@ -13,23 +13,37 @@ import java.io.Serializable;
  */
 public class CarDTO implements Serializable{
 
-    private String carId, name, color, categoryId;
-    private int year, quantity;
+    private String carId, name, color, categoryId,licensePlate;
+    private int year, totalCar;
     private float price,rateAvg;
 
+    public CarDTO(String color, String licensePlate, float price) {
+        this.color = color;
+        this.licensePlate = licensePlate;
+        this.price = price;
+    }
+    
     public CarDTO() {
     }
 
-    public CarDTO(String carId, String name, String color, String categoryId, int year, int quantity, float price) {
+    public CarDTO(String carId, String name, String color, String categoryId, int year, float price,String licensePlate) {
         this.carId = carId;
         this.name = name;
         this.color = color;
         this.categoryId = categoryId;
         this.year = year;
-        this.quantity = quantity;
+        this.licensePlate=licensePlate;
         this.price = price;
     }
 
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
+ 
     public void setRateAvg(float rateAvg) {
         this.rateAvg = rateAvg;
     }
@@ -78,13 +92,17 @@ public class CarDTO implements Serializable{
         this.year = year;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public int getTotalCar() {
+        return totalCar;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setTotalCar(int totalCar) {
+        this.totalCar = totalCar;
     }
+
+   
+
+   
 
     public float getPrice() {
         return price;
