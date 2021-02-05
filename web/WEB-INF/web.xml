@@ -32,6 +32,10 @@
         <servlet-name>ActiveSvl</servlet-name>
         <servlet-class>linhtnl.controllers.ActiveSvl</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CarRentalSvl</servlet-name>
+        <servlet-class>linhtnl.controllers.CarRentalSvl</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>InitSvl</servlet-name>
         <url-pattern>/index.html</url-pattern>
@@ -63,6 +67,10 @@
     <servlet-mapping>
         <servlet-name>ActiveSvl</servlet-name>
         <url-pattern>/ActiveSvl</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CarRentalSvl</servlet-name>
+        <url-pattern>/CarRentalSvl</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

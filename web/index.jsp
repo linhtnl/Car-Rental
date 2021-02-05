@@ -169,7 +169,7 @@
                         <div class="col-md-3 col-sm-6">
                             <div class="product-grid" style="margin-bottom: 5%">
                                 <div class="product-image" >      
-                                    <img class="pic-1" height="150"  width="350" src="images/marcus-p-oUBjd22gF6w-unsplash.jpg">                               
+                                    <img class="pic-1" height="150"  width="350" src="images/${dto.img}">                               
                                     <ul class="social">                         
                                         <li><a href="login.jsp" data-tip="Add to Cart"><i class="fa fa-shopping-cart"></i></a></li>
                                         <li>
@@ -206,9 +206,9 @@
                                             </c:if>
                                         </c:forEach>
                                         <br>
-                                         <b>Quantity: </b> ${dto.size} <br> 
-                                        
-
+                                        <b>Quantity: </b> ${dto.size} <br> 
+                                        <b>No of seats: </b> ${dto.noOfSeats} <br> 
+                                        <b>Fuel: </b> ${dto.fuel} <br> 
                                         
                                     </div>
                                     <div class="modal-footer">
@@ -300,7 +300,35 @@
             document.forms['index'].action.value = 'Paging';
             document.forms['index'].submit();
         }
+        function checkDateRent(){
+            var dateR = document.forms['index'].dateRent.value;
+            var year = dateR.split('-')[0];
+            if(year.length >4){
+                return false;
+            }
+            return true;
+        }
+        function checkDateReturn(){
+            var dateR = document.forms['index'].dateReturn.value;
+            var year = dateR.split('-')[0];
+            if(year.length >4){
+                return false;
+            }
+            return true;
+        }
         function Search() {
+           
+            
+            var checkDR = checkDateRent();
+            var checkDRe = checkDateReturn();
+            if(!checkDR){
+                alert('The Year of Date Rent is overloading');
+                return;
+            }
+            if(!checkDRe){
+                 alert('The Year of Date Return is overloading');
+                return;
+            }
             var dateRent = document.forms['index'].dateRent.value.replaceAll("-","");
             var dateReturn = document.forms['index'].dateReturn.value.replaceAll("-","");
             if(parseInt(dateRent)>parseInt(dateReturn)) {

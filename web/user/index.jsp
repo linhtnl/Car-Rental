@@ -13,9 +13,9 @@
                 <div class="col-md-3 col-sm-6">
                     <div class="product-grid" style="margin-bottom: 5%">
                         <div class="product-image" >      
-                            <img class="pic-1" height="150"  width="350" src="../images/marcus-p-oUBjd22gF6w-unsplash.jpg">                               
+                            <img class="pic-1" height="150"  width="350" src="../images/${dto.img}">                               
                             <ul class="social">                         
-                                <li><a href="viewCar.jsp" data-tip="Add to Cart"><i class="fa fa-shopping-cart"></i></a></li>
+                                <li><a href="../CarRentalSvl?carID=${dto.carID}" data-tip="Add to Cart"><i class="fa fa-shopping-cart"></i></a></li>
                                 <li>
                                     <a data-tip="Quick View" data-toggle="modal" data-target="#myModal${counter.count}"><i class="fa fa-search"></i></a>
                                 </li>
@@ -51,12 +51,13 @@
                                 </c:forEach>
                                 <br>
                                 <b>Quantity: </b> ${dto.size} <br> 
-
+                                <b>No of seats: </b> ${dto.noOfSeats} <br> 
+                                <b>Fuel: </b> ${dto.fuel} <br> 
 
 
                             </div>
                             <div class="modal-footer">
-                                <a type="button" href="viewCar.jsp" class="btn btn-primary"><font color="white">Rent</font></a>
+                                <a type="button" href="../CarRentalSvl?carID=${dto.carID}" class="btn btn-primary"><font color="white">Rent</font></a>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             </div>
                         </div>

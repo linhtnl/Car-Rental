@@ -64,10 +64,10 @@ public class CarDAO implements Serializable {
              3. Loại trừ lại những biển số xe đã được cho thuê.
              */
             //Step 1
-            String sql = "SELECT C.CarId ,C.categoryID,C.name,C.year, count(licensePlate) as total \n"
+            String sql = "SELECT C.CarId ,C.categoryID,C.name,C.year,img, noOfSeats, fuel \n"
                     + "FROM Car C, Car_Detail CD, Category CA   \n"
                     + "where C.categoryID=Ca.CategoryId  and CD.CarID=C.CarId and CA.categoryID like '" + categoryId + "' and C.name like '%" + carName + "%' \n"
-                    + "Group by C.CarId,C.categoryID,C.name,C.year\n"
+                    + "Group by C.CarId,C.categoryID,C.name,C.year,img, noOfSeats,fuel\n"
                     + "Having count(licensePlate)>=" + carNum;
             con = LinhConnection.getConnection();
             pst = con.prepareStatement(sql);
@@ -77,14 +77,15 @@ public class CarDAO implements Serializable {
                 String name = rs.getString("name");
                 int year = rs.getInt("year");
                 String cateID = rs.getString("categoryID");
-                int total = rs.getInt("total");
+                int noOfSeats = rs.getInt("noOfSeats");
+                String img  = rs.getString("img");
                 CarByName car = new CarByName(cateID, name, carId, year);
-                car.setQuantity(total);
+                car.setImg(img); car.setNoOfSeats(noOfSeats);car.setFuel(rs.getString("fuel"));
                 cbnlist.add(car);
             }
             //Step 2:
             for (CarByName car : cbnlist) {
-                sql = "SELECT licensePlate, color,price\n"
+                sql = "SELECT licensePlate, color,price, pickupLocation, returnLocation\n"
                         + "FROM Car_Detail \n"
                         + "where CarID='" + car.getCarID() + "'";
                 pst = con.prepareStatement(sql);
@@ -94,6 +95,8 @@ public class CarDAO implements Serializable {
                     String licensePlate = rs.getString("licensePlate");
                     float price = rs.getFloat("price");
                     CarDTO dto = new CarDTO(color, licensePlate, price);
+                    dto.setPickup(rs.getString("pickupLocation"));
+                    dto.setReturnLocation(rs.getString("returnLocation"));
                     list.add(dto);
                 }
                 car.setList(list);
@@ -124,6 +127,9 @@ public class CarDAO implements Serializable {
     }
 
     private Vector<CarByName> checkQuantity(String dateRent, String dateReturn, Vector<CarByName> listCar) throws Exception {
+        if(listCar.size()==0) return listCar;
+        Vector<Integer> index = new Vector<>();
+        int count=0;
         try {
             String sql = "select ID.licensePlate\n"
                     + "from invoice I, invoice_detail ID \n"
@@ -136,14 +142,18 @@ public class CarDAO implements Serializable {
                 for (CarByName car : listCar) {
                     for (CarDTO dto : car.getList()) {
                         if (dto.getLicensePlate().equals(plate)) {
-                            listCar.remove(dto);
+                            index.add(count);
                         }
+                        count++;
                     }
                 }
 
             }
         } finally {
             closeConnection();
+        }
+        for (Integer integer : index) {
+            listCar.remove(integer);
         }
         return listCar;
     }
@@ -186,10 +196,10 @@ public class CarDAO implements Serializable {
         Vector<CarDTO> result = new Vector<>();
         try {
             //Get CarID
-            String sql = "select c.carID, name, year, categoryID , count(cd.licensePlate) as total\n"
+            String sql = "select c.carID, name, year, categoryID , img,noOfSeats,fuel \n"
                     + "from car c, Car_Detail cd\n"
                     + "where c.CarId=cd.CarID\n"
-                    + "group by c.carID, name, year, categoryID ";
+                    + "group by c.carID, name, year, categoryID ,img,noOfSeats,fuel";
             con = LinhConnection.getConnection();
             pst = con.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -199,12 +209,14 @@ public class CarDAO implements Serializable {
                 int year = rs.getInt("year");
                 String categoryId = rs.getString("categoryID");
                 CarByName dto = new CarByName(categoryId, name, carId, year);
-                dto.setQuantity(rs.getInt("total"));
+                dto.setImg(rs.getString("img"));
+                dto.setNoOfSeats(rs.getInt("noOfSeats"));
+                dto.setFuel(rs.getString("fuel"));
                 cbnlist.add(dto);
             }
             //Get list plates by CarId
             for (CarByName car : cbnlist) {
-                sql = "select licensePlate,price,color from Car_Detail where CarID=?";
+                sql = "select licensePlate,price,pickupLocation,color,returnLocation from Car_Detail where CarID=?";
                 pst = con.prepareStatement(sql);
                 pst.setString(1, car.getCarID());
                 rs = pst.executeQuery();
@@ -213,6 +225,8 @@ public class CarDAO implements Serializable {
                     float price = rs.getFloat("price");
                     String color = rs.getString("color");
                     CarDTO dto = new CarDTO(color, licensePlate, price);
+                    dto.setPickup(rs.getString("pickupLocation"));
+                    dto.setReturnLocation(rs.getString("returnLocation"));
                     result.add(dto);
                 }
                 car.setList(result);

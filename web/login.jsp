@@ -59,10 +59,14 @@
 
 
                                 <div class="form-group">
-                                    <div class="g-recaptcha" data-sitekey="6Lc9RkkaAAAAAFKIO8emW3AiCmVq1Li-JJdazY49"></div>
+                                    
                                     <a href="register.jsp" >Create new account</a><br><br>
                                     <button class="btn btn-info btn-md" style="margin-left: 30%"><a href="index.jsp" style="color:white;text-decoration: none;">Back</a></button>
-                                    <input type="submit" name="submit" class="btn btn-info btn-md" value="Login" style="margin-left: 10%">
+                                    <button class="g-recaptcha btn btn-info btn-md" 
+                                            data-sitekey="6Lc9RkkaAAAAAFKIO8emW3AiCmVq1Li-JJdazY49" 
+                                            data-callback='onSubmit' 
+                                            data-action='submit' style="margin-left: 50%;margin-top: -69px">Login </button>
+                                  
                                 </div>
                             </form>
                             <span><i><font color="red">
@@ -77,14 +81,21 @@
             </div>
         </div>
     </body>
-
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    <script type="text/javascript">
-        var onloadCallback = function() {
-           // alert("grecaptcha is ready!");
-        };
+    <script>
+        function onClick(e) {
+            e.preventDefault();
+            grecaptcha.ready(function() {
+                grecaptcha.execute('6Lc9RkkaAAAAAFKIO8emW3AiCmVq1Li-JJdazY49', {action: 'submit'}).then(function(token) {
+                    // Add your logic to submit to your backend server here.
+                });
+            });
+        }
     </script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
-            async defer>
+    <script src="https://www.google.com/recaptcha/api.js?render=6Lc9RkkaAAAAAFKIO8emW3AiCmVq1Li-JJdazY49"></script>
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <script>
+        function onSubmit(token) {
+            document.getElementById("demo-form").submit();
+        }
     </script>
 </html>

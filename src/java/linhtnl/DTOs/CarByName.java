@@ -14,11 +14,12 @@ import java.util.Vector;
  */
 public class CarByName implements Serializable{
 
-    private String categoryID, categoryName;
+    private String categoryID, categoryName,fuel,img;
     private String carName, carID;
     private int year,quantity;
     private Vector<CarDTO> list;
-
+    private int noOfSeats;
+    
     public CarByName(String categoryID, String carName, String carID, int year) {
         this.categoryID = categoryID;
         this.carName = carName;
@@ -51,6 +52,30 @@ public class CarByName implements Serializable{
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public int getNoOfSeats() {
+        return noOfSeats;
+    }
+
+    public String getFuel() {
+        return fuel;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+
+    public void setNoOfSeats(int noOfSeats) {
+        this.noOfSeats = noOfSeats;
+    }
+
+    public void setFuel(String fuel) {
+        this.fuel = fuel;
     }
 
     public void setQuantity(int quantity) {

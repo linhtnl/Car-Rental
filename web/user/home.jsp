@@ -135,58 +135,66 @@
         <%@include file="index.jsp" %>
     </body>
     <script>
-        function checkDateRent(){
-            var dateR = document.forms['home'].dateRent.value;
+        function checkDateRent() {
+            var dateR = document.forms['header'].dateRent.value;
             var year = dateR.split('-')[0];
-            if(year.length >4){
+            if (year.length > 4) {
                 return false;
             }
             return true;
         }
-        function checkDateReturn(){
-            var dateR = document.forms['home'].dateReturn.value;
+        function checkDateReturn() {
+            var dateR = document.forms['header'].dateReturn.value;
             var year = dateR.split('-')[0];
-            if(year.length >4){
+            if (year.length > 4) {
                 return false;
             }
             return true;
         }
         function Search() {
+           
+            var dateRent = document.forms['header'].dateRent.value.replaceAll("-", "");
+            var dateReturn = document.forms['header'].dateReturn.value.replaceAll("-", "");
+            if (parseInt(dateRent) > parseInt(dateReturn)) {
+                alert("Ngày thuê không thể lớn hơn ngày trả về");
+                return;
+            }
             var checkDR = checkDateRent();
             var checkDRe = checkDateReturn();
-            if(!checkDR){
+            if (!checkDR) {
                 alert('The Year of Date Rent is overloading');
                 //document.forms['home'].dateRent.value ='';
                 return;
             }
-            if(!checkDRe){
-                 alert('The Year of Date Return is overloading');
-                 //document.forms['home'].dateReturn.value ='';
+            if (!checkDRe) {
+                alert('The Year of Date Return is overloading');
+                //document.forms['home'].dateReturn.value ='';
                 return;
             }
-            document.forms['home'].action.value = 'Search';
-            document.forms['home'].submit();
+            document.forms['header'].action.value = 'Search';
+            document.forms['header'].submit();
         }
         $(window).on("load", function() {
             //alert(1);
+            var pageNumber = 'page' + document.getElementById("pageNum").value;
+            console.log(pageNumber)
+            document.getElementById(pageNumber).classList.add('active');
+            
             var categoryId = document.getElementById('categoryId').value;
             if (categoryId == '')
                 categoryId = 'none';
             console.log(categoryId);
             document.getElementById(categoryId).selected = true;
+
         });
-        $(window).on("load", function() {
-            var pageNumber = 'page' + document.getElementById("pageNum").value;
-            //console.log(pageNumber)
-            document.getElementById(pageNumber).classList.add('active');
-        });
+       
         function pageNum(page) {
             document.getElementById('pageNum').value = page;
             document.forms['index'].action.value = 'Paging';
             document.forms['index'].submit();
         }
-        function Home(){
-            document.forms['home'].action.value='Init';
+        function Home() {
+            document.forms['home'].action.value = 'Init';
             document.forms['home'].submit();
         }
     </script>

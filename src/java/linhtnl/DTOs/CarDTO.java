@@ -13,7 +13,7 @@ import java.io.Serializable;
  */
 public class CarDTO implements Serializable{
 
-    private String carId, name, color, categoryId,licensePlate;
+    private String carId, name, color, categoryId,licensePlate,pickup,returnLocation,dateRent,dateReturn;
     private int year, totalCar;
     private float price,rateAvg;
 
@@ -36,8 +36,40 @@ public class CarDTO implements Serializable{
         this.price = price;
     }
 
-    public String getLicensePlate() {
+    public String getDateRent() {
+        return dateRent;
+    }
+
+    public void setDateReturn(String dateReturn) {
+        this.dateReturn = dateReturn;
+    }
+
+    public String getDateReturn() {
+        return dateReturn;
+    }
+
+    public void setDateRent(String dateRent) {
+        this.dateRent = dateRent;
+    }
+     
+   public String getLicensePlate() {
         return licensePlate;
+    }
+
+    public void setReturnLocation(String returnLocation) {
+        this.returnLocation = returnLocation;
+    }
+
+    public void setPickup(String pickup) {
+        this.pickup = pickup;
+    }
+
+    public String getReturnLocation() {
+        return returnLocation;
+    }
+
+    public String getPickup() {
+        return pickup;
     }
 
     public void setLicensePlate(String licensePlate) {
