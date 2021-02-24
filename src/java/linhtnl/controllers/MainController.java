@@ -89,6 +89,12 @@ public class MainController extends HttpServlet {
                 case "Renting":
                     url = Path.RENTING;
                     break;
+                case "Cart":
+                    url = Path.CART;
+                    break;
+                case "Invoice":
+                    url = Path.INVOICE;
+                    break;
             }
         }catch(Exception e){
             log("ERROR at MainController: "+e.getMessage());

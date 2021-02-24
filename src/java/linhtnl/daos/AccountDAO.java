@@ -82,6 +82,7 @@ public class AccountDAO {
 
     public Account getAccount(String email) throws Exception {
         Account acc = new Account();
+        acc.setEmail(email);
         try {
             String sql = "select phone, name, address, status \n"
                     + "from account\n"
@@ -114,7 +115,6 @@ public class AccountDAO {
         // 1: valid
         int check = -1;
         try {
-            System.out.println(email);
             String sql = "Select email, password from Account where email = '" + email + "'";
             con = LinhConnection.getConnection();
             pst = con.prepareStatement(sql);

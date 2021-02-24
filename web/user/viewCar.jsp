@@ -102,7 +102,7 @@
             <input type="hidden" name="action" value=""/>
             <div class="container">
                 <h2>${sessionScope.carDetail.carName}  </h2>
-                <p>All car available for renting.</p>            
+                <p>All cars available for renting.</p>            
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -149,10 +149,10 @@
                                                     <b>Choose date Rent and Return</b><br><br>
                                                     <div class="row">
                                                         <div class="col">
-                                                            <input type="date" id="dateRent${dto.licensePlate}" min="0" class="form-control search-slt" placeholder="Date Rent"  value="${sessionScope.searchDTO.dateRent}">
+                                                            <input type="date" id="dateRent${dto.licensePlate}" min="0" class="form-control search-slt" placeholder="Date Rent" name="dateRent${dto.licensePlate}" value="${sessionScope.searchDTO.dateRent}">
                                                         </div>
                                                         <div class="col">
-                                                            <input type="date" id="dateReturn${dto.licensePlate}" min="0" class="form-control search-slt" placeholder="Date Return" value="${sessionScope.searchDTO.dateReturn}">
+                                                            <input type="date" id="dateReturn${dto.licensePlate}" min="0" class="form-control search-slt" placeholder="Date Return" name="dateReturn${dto.licensePlate}" value="${sessionScope.searchDTO.dateReturn}">
                                                         </div>        
                                                     </div>
                                                 </div>
@@ -186,22 +186,26 @@
             dateRent = dateRent.replaceAll('-', '');
             dateReturn = dateReturn.replaceAll('-', '');
             console.log(dateRent+" - "+dateReturn);
-            if (parseInt(dateRent) > parseInt(dateReturn))
+            if (parseInt(dateRent) >= parseInt(dateReturn))
                 return 'Date rent cannot greater than date return';
             var d = new Date();
-            var now = parseInt(d.getFullYear() + '' + d.getMonth() + '' + d.getDate());
+            var month = d.getMonth()+1;
+            if(month<10) month='0'+month;
+            var date =  d.getDate();
+            if(date<10) date='0'+date;
+            var now = parseInt(d.getFullYear() + '' + month + '' +date);          
             if (parseInt(dateRent) < now)
-                return 'date Rent cannot less than today';
+                return 'date Rent cannot less than  today';
             if (parseInt(dateReturn) < now)
                 return 'date Return cannot less than today';
-            return'';
+            return '';
         }
         function Renting(str) {
             var mes = checkDate(str);
             if (mes != '') {
                 alert(mes);
                 return;
-            }
+            }   
             document.getElementById('licensePlate').value = str;
             document.forms['view'].action.value = 'Renting';
             document.forms['view'].submit();

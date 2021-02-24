@@ -16,13 +16,21 @@ public class SearchDTO implements Serializable{
     String nameCar, categoryId;
     int carNum;
     String dateReturn, dateRent;
-
+    String name;
     @Override
     public String toString() {
         return nameCar +" - "+carNum;
     }
     
     public SearchDTO() {
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public SearchDTO(String nameCar, String categoryId, int carNum, String dateReturn, String dateRent) {

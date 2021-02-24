@@ -1,4 +1,4 @@
-/*
+ /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -9,23 +9,21 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Vector;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServlet;                
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import linhtnl.DTOs.Account;
-import linhtnl.DTOs.CarByName;
-import linhtnl.DTOs.CarDTO;
+import linhtnl.DTOs.Invoice;
 import linhtnl.DTOs.SearchDTO;
-import linhtnl.daos.CarDAO;
+import linhtnl.daos.InvoiceDAO;
 import linhtnl.util.Path;
-
 
 /**
  *
  * @author ASUS
  */
-public class PagingSvl extends HttpServlet {
+public class InvoiceManagementSvl extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +42,10 @@ public class PagingSvl extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet PagingSvl</title>");
+            out.println("<title>Servlet InvoiceManagementSvl</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet PagingSvl at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet InvoiceManagementSvl at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -84,49 +82,43 @@ public class PagingSvl extends HttpServlet {
         try {
             HttpSession session = request.getSession();
             Account acc = (Account) session.getAttribute("ACC");
-            int pageNum = Integer.parseInt(request.getParameter("pageNum"));
-            CarDAO dao = new CarDAO();
-            boolean flag = true; //Search 
-            SearchDTO dto = (SearchDTO) session.getAttribute("searchDTO");
-            if (dto == null) {
-                flag = false;//Khong SEARCH
-            }
-            Vector<CarByName> list = new Vector<>();
-            int totalPage = 0;
-            /*
-             1.Get list to display by pageNum
-             2.Get totalPage
-             3.Set URL
-             */
-
-            if (acc == null) { //For guest
-                if (flag) {//search
-                    list = dao.searchCar(pageNum, dto.getNameCar(), dto.getCategoryId(), dto.getCarNum(), dto.getDateRent(), dto.getDateReturn());
-                    totalPage = dao.getTotalSearchPage(dto.getNameCar(), dto.getCategoryId(), dto.getCarNum(), dto.getDateRent(), dto.getDateReturn());
-                } else {
-                    list = dao.getAllCar(pageNum);
-                    totalPage = dao.getTotalPageByCarName();
-                }
-                url = Path.INDEX;
+            if (acc == null) {
+                url = Path.LOGIN;
             } else {
-                if (flag) {//search                       
-                    list = dao.searchCar(pageNum, dto.getNameCar(), dto.getCategoryId(), dto.getCarNum(), dto.getDateRent(), dto.getDateReturn());
-                    totalPage = dao.getTotalSearchPage(dto.getNameCar(), dto.getCategoryId(), dto.getCarNum(), dto.getDateRent(), dto.getDateReturn());
-                } else {//Khong search
-                    list = dao.getAllCar(pageNum);
-                    totalPage = dao.getTotalPageByCarName();
+                String subaction = request.getParameter("subaction");
+                if (subaction == null) {
+                    subaction = "";
                 }
-                url = Path.USER_HOME;
-                session.setAttribute("Url", Path.USER_HOME);
+                InvoiceDAO dao = new InvoiceDAO();
+                if (subaction.equals("delete")) {
+                    String id = request.getParameter("id");
+                    if (dao.deleteInvoice(id)) {
+                        Vector<Invoice> list = dao.init();
+                        session.setAttribute("listInvoice", list);
+                        url = Path.VIEW_INVOICE;
+                    }
+                }
+                else if (subaction.equals("search")) {
+                    String dateRent=request.getParameter("dateRent");
+                    String dateReturn = request.getParameter("dateReturn");
+                    String name = request.getParameter("invoiceName");
+                    SearchDTO dto = new SearchDTO();
+                    dto.setDateRent(dateRent); dto.setDateReturn(dateReturn);dto.setName(name);
+                    Vector<Invoice> list = dao.searchInvoice(dateReturn, dateRent,name);
+                    session.setAttribute("listInvoice", list);
+                    session.setAttribute("searchInfo", dto);
+                    url = Path.VIEW_INVOICE;
+                }else {
+                    //View invoice
+                    Vector<Invoice> list = dao.init();
+                    session.setAttribute("listInvoice", list);
+                    session.setAttribute("searchInfo", null);
+                    url = Path.VIEW_INVOICE;
 
+                }
             }
-            System.out.println("totalpage: " + totalPage);
-            session.setAttribute("totalPage", totalPage);
-            session.setAttribute("listCar", list);
-            session.setAttribute("pageNum", pageNum);
         } catch (Exception e) {
-            e.printStackTrace();
-            log("ERROR at PagingSvl: " + e.getMessage());
+            log("ERROR at InvoiceManagementSvl:" + e.getMessage());
         } finally {
             response.sendRedirect(url);
         }

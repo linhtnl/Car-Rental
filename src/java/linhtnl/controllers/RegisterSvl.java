@@ -95,7 +95,7 @@ public class RegisterSvl extends HttpServlet {
             AccountDAO dao = new AccountDAO();
             Account dto = new Account(email, pass, name, phone, addr, confirm);
             if (dao.emailExist(email)) {
-                dto.setAccountError("This email is registered!");
+                dto.setAccountError("This email was registered!");
                 session.setAttribute("ACC", dto);
             } else {
                 if (dao.createNew(dto)) {

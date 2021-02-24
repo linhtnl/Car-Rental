@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Vector;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,11 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import linhtnl.DTOs.Account;
 import linhtnl.DTOs.CarByName;
-import linhtnl.DTOs.CarDTO;
 import linhtnl.DTOs.SearchDTO;
 import linhtnl.daos.CarDAO;
 import linhtnl.util.Path;
-import linhtnl.util.PathUser;
 
 /**
  *
@@ -86,14 +83,14 @@ public class SearchSvl extends HttpServlet {
         try {
             HttpSession session = request.getSession();
             Account acc = (Account) session.getAttribute("ACC");
-            CarDAO dao = new CarDAO();     
+            CarDAO dao = new CarDAO();
             Calendar cal = Calendar.getInstance();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");             
-            String carName = (request.getParameter("carName") == null) ? "" : request.getParameter("carName");       
-            String category = (request.getParameter("category") == null) ? ""  :request.getParameter("category");
-            int carNum = (request.getParameter("carNum") == null || request.getParameter("carNum").isEmpty()) ? 1 : Integer.parseInt(request.getParameter("carNum")) ;
-            String dateRent = (request.getParameter("dateRent")== null || request.getParameter("dateRent").isEmpty()) ? formatter.format(cal.getTime()) : request.getParameter("dateRent");
-            String dateReturn = (request.getParameter("dateReturn")== null || request.getParameter("dateReturn").isEmpty()) ? formatter.format(cal.getTime()) : request.getParameter("dateReturn");       
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            String carName = (request.getParameter("carName") == null) ? "" : request.getParameter("carName");
+            String category = (request.getParameter("category") == null) ? "" : request.getParameter("category");
+            int carNum = (request.getParameter("carNum") == null || request.getParameter("carNum").isEmpty()) ? 1 : Integer.parseInt(request.getParameter("carNum"));
+            String dateRent = (request.getParameter("dateRent") == null || request.getParameter("dateRent").isEmpty()) ? formatter.format(cal.getTime()) : request.getParameter("dateRent");
+            String dateReturn = (request.getParameter("dateReturn") == null || request.getParameter("dateReturn").isEmpty()) ? formatter.format(cal.getTime()) : request.getParameter("dateReturn");
             SearchDTO searchDTO = new SearchDTO(carName, category, carNum, dateReturn, dateRent);
             session.setAttribute("searchDTO", searchDTO);
             Vector<CarByName> list = dao.searchCar(1, carName, category, carNum, dateRent, dateReturn);
@@ -106,9 +103,9 @@ public class SearchSvl extends HttpServlet {
              */
             if (acc == null) {//for Guest
                 url = Path.INDEX;
-            } else {          
-                    url=Path.USER_HOME;          
-            }          
+            } else {
+                url = Path.USER_HOME;
+            }
             session.setAttribute("listCar", list);
             session.setAttribute("pageNum", 1);
             session.setAttribute("totalPage", dao.getTotalSearchPage(carName, category, carNum, dateRent, dateReturn));

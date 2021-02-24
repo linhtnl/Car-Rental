@@ -14,18 +14,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import linhtnl.DTOs.Account;
-import linhtnl.DTOs.CarByName;
 import linhtnl.DTOs.CarDTO;
-import linhtnl.DTOs.SearchDTO;
-import linhtnl.daos.CarDAO;
+import linhtnl.DTOs.Invoice;
+import linhtnl.daos.InvoiceDAO;
 import linhtnl.util.Path;
-
 
 /**
  *
  * @author ASUS
  */
-public class PagingSvl extends HttpServlet {
+public class FeedbackSvl extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -44,10 +42,10 @@ public class PagingSvl extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet PagingSvl</title>");
+            out.println("<title>Servlet FeedbackSvl</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet PagingSvl at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet FeedbackSvl at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -66,6 +64,29 @@ public class PagingSvl extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //processRequest(request, response);
+        String url = Path.ERROR;
+        try {
+            HttpSession session = request.getSession();
+            Account acc = (Account) session.getAttribute("ACC");
+            if (acc == null) {
+                url = Path.LOGIN;
+            } else {
+                String invoiceId = request.getParameter("invoiceID");
+                Vector<Invoice> list = (Vector<Invoice>) session.getAttribute("listInvoice");
+                Invoice invoice = new Invoice();
+                for (Invoice i : list) {
+                    if (i.getId().equals(invoiceId)) {
+                        invoice = i;
+                    }
+                }
+                session.setAttribute("invoiceFB", invoice);
+                url = Path.FEEDBACK;
+            }
+        } catch (Exception e) {
+            log("ERROR at doGet of FeedbackSvl:" + e.getMessage());
+        } finally {
+            response.sendRedirect(url);
+        }
     }
 
     /**
@@ -79,57 +100,42 @@ public class PagingSvl extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //processRequest(request, response);
+        // processRequest(request, response);
         String url = Path.ERROR;
         try {
             HttpSession session = request.getSession();
             Account acc = (Account) session.getAttribute("ACC");
-            int pageNum = Integer.parseInt(request.getParameter("pageNum"));
-            CarDAO dao = new CarDAO();
-            boolean flag = true; //Search 
-            SearchDTO dto = (SearchDTO) session.getAttribute("searchDTO");
-            if (dto == null) {
-                flag = false;//Khong SEARCH
-            }
-            Vector<CarByName> list = new Vector<>();
-            int totalPage = 0;
-            /*
-             1.Get list to display by pageNum
-             2.Get totalPage
-             3.Set URL
-             */
-
-            if (acc == null) { //For guest
-                if (flag) {//search
-                    list = dao.searchCar(pageNum, dto.getNameCar(), dto.getCategoryId(), dto.getCarNum(), dto.getDateRent(), dto.getDateReturn());
-                    totalPage = dao.getTotalSearchPage(dto.getNameCar(), dto.getCategoryId(), dto.getCarNum(), dto.getDateRent(), dto.getDateReturn());
-                } else {
-                    list = dao.getAllCar(pageNum);
-                    totalPage = dao.getTotalPageByCarName();
-                }
-                url = Path.INDEX;
+            if (acc == null) {
+                url = Path.LOGIN;
             } else {
-                if (flag) {//search                       
-                    list = dao.searchCar(pageNum, dto.getNameCar(), dto.getCategoryId(), dto.getCarNum(), dto.getDateRent(), dto.getDateReturn());
-                    totalPage = dao.getTotalSearchPage(dto.getNameCar(), dto.getCategoryId(), dto.getCarNum(), dto.getDateRent(), dto.getDateReturn());
-                } else {//Khong search
-                    list = dao.getAllCar(pageNum);
-                    totalPage = dao.getTotalPageByCarName();
+                int flag = 1;
+                Invoice invoice = (Invoice) session.getAttribute("invoiceFB");
+                for (CarDTO dto : invoice.getList()) {
+                    int rating = Integer.parseInt(request.getParameter("rating" + dto.getLicensePlate()));
+                    if (rating >= 0 && rating <= 10) {
+                        dto.setRating(rating);
+                    } else {
+                        flag = 0;//ERROR rating                      
+                    }
+                    if (flag == 0) {
+                        break;
+                    }
                 }
-                url = Path.USER_HOME;
-                session.setAttribute("Url", Path.USER_HOME);
-
+                if (flag == 1) {
+                    //save in database
+                    InvoiceDAO dao = new InvoiceDAO();
+                    if (dao.feedback(invoice)) {
+                        session.setAttribute("listInvoice", dao.init());
+                        url = Path.VIEW_INVOICE;
+                    }
+                }
             }
-            System.out.println("totalpage: " + totalPage);
-            session.setAttribute("totalPage", totalPage);
-            session.setAttribute("listCar", list);
-            session.setAttribute("pageNum", pageNum);
         } catch (Exception e) {
-            e.printStackTrace();
-            log("ERROR at PagingSvl: " + e.getMessage());
+            log("ERROR at doPostof FeedbackSvl:" + e.getMessage());
         } finally {
             response.sendRedirect(url);
         }
+
     }
 
     /**

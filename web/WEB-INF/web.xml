@@ -36,6 +36,18 @@
         <servlet-name>CarRentalSvl</servlet-name>
         <servlet-class>linhtnl.controllers.CarRentalSvl</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CartManagementSvl</servlet-name>
+        <servlet-class>linhtnl.controllers.CartManagementSvl</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>InvoiceManagementSvl</servlet-name>
+        <servlet-class>linhtnl.controllers.InvoiceManagementSvl</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FeedbackSvl</servlet-name>
+        <servlet-class>linhtnl.controllers.FeedbackSvl</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>InitSvl</servlet-name>
         <url-pattern>/index.html</url-pattern>
@@ -71,6 +83,18 @@
     <servlet-mapping>
         <servlet-name>CarRentalSvl</servlet-name>
         <url-pattern>/CarRentalSvl</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CartManagementSvl</servlet-name>
+        <url-pattern>/CartManagementSvl</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>InvoiceManagementSvl</servlet-name>
+        <url-pattern>/InvoiceManagementSvl</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FeedbackSvl</servlet-name>
+        <url-pattern>/FeedbackSvl</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

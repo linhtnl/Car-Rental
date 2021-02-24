@@ -9,9 +9,8 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Vector;
 import linhtnl.DTOs.CarByName;
 import linhtnl.DTOs.CarDTO;
@@ -40,21 +39,110 @@ public class CarDAO implements Serializable {
         }
     }
 
-    public int getTotalSearchPage(String carName, String category, int carNum, String dateRent, String dateReturn) throws Exception {;
-        int count=1;
-        int total=0;
-        int size = searchCar(count, carName, category, carNum, dateRent, dateReturn).size();
-        total+=size;
-        while(size==20){
-            count++;
-            size =searchCar(count, carName, category, carNum, dateRent, dateReturn).size();
-            total+=size;
+    public CarDTO checkAvailable(CarDTO dto) throws Exception {
+        boolean status = true;
+        try {
+            String sql = "select * \n"
+                    + "from invoice_detail\n"
+                    + "where licensePlate = '" + dto.getLicensePlate() + "' and dateRent <='" + dto.getDateRent() + "' ";
+            con = LinhConnection.getConnection();
+            pst = con.prepareStatement(sql);
+            rs = pst.executeQuery();
+            if (!rs.next()) {
+                sql = "select * \n"
+                        + "from invoice_detail\n"
+                        + "where licensePlate = '" + dto.getLicensePlate() + "' and dateReturn >='" + dto.getDateReturn() + "'";
+                pst = con.prepareStatement(sql);
+                rs = pst.executeQuery();
+                if (!rs.next()) {
+                    sql = "select * \n"
+                            + "from invoice_detail\n"
+                            + "where licensePlate = '" + dto.getLicensePlate() + "' and dateRent >='" + dto.getDateRent() + "'  and dateReturn <='" + dto.getDateReturn() + "'";
+                    pst = con.prepareStatement(sql);
+                    rs = pst.executeQuery();
+                    if (rs.next()) {
+                        status = false;
+                    }
+                } else {
+                    status = false;
+                }
+            } else {
+                status = false;
+            }
+        } finally {
+            closeConnection();
         }
-        
+        dto.setAvailable(status);
+        return dto;
+    }
+
+    public String checkout(Vector<CarDTO> cart, String email,String voucherID) throws Exception {
+        String id = "";
+        boolean check = true;
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+        int count = 0;
+        id = Calendar.getInstance().getTimeInMillis() + "";
+        try {           
+            String sql = "INSERT INTO INVOICE(id, dateSubmit,isDelete, email, voucherId)"
+                    + "VALUES ('" + id + "','" + formatter.format(Calendar.getInstance().getTime()) + "',0,'" + email + "',"+voucherID+")";
+            con = LinhConnection.getConnection();
+            con.setAutoCommit(false);
+            pst = con.prepareStatement(sql);
+            count += pst.executeUpdate();
+            for (CarDTO dto : cart) {
+                sql = "INSERT INVOICE_DETAIL(invoiceId, licensePlate,price, dateRent,dateReturn, pickupLocation, returnLocation)"
+                        + "VALUES('" + id + "','" + dto.getLicensePlate() + "'," + dto.getPrice() + ",'" + dto.getDateRent() + "','" + dto.getDateReturn() + "','" + dto.getPickup() + "','" + dto.getReturnLocation() + "')";
+                pst = con.prepareStatement(sql);
+                count += pst.executeUpdate();
+            }
+            con.commit();
+            if (count != cart.size() + 1) {
+                check = false;
+            }
+        } finally {
+            closeConnection();
+        }
+        if (!check) {
+            id = "";
+        }
+        return id;
+    }
+
+    public Vector<CarDTO> getInfomationOfCars(Vector<CarDTO> cart) throws Exception {
+        try {
+            con = LinhConnection.getConnection();
+            for (CarDTO dto : cart) {
+                String sql = "select price,color,pickupLocation,returnLocation from Car_Detail where licensePlate like '" + dto.getLicensePlate() + "'";
+                pst = con.prepareStatement(sql);
+                rs = pst.executeQuery();
+                if (rs.next()) {
+                    dto.setColor(rs.getString("color"));
+                    dto.setPrice(rs.getFloat("price"));
+                    dto.setPickup(rs.getString("pickupLocation"));
+                    dto.setReturnLocation(rs.getString("returnLocation"));
+                }
+            }
+        } finally {
+            closeConnection();
+        }
+        return cart;
+    }
+
+    public int getTotalSearchPage(String carName, String category, int carNum, String dateRent, String dateReturn) throws Exception {;
+        int count = 1;
+        int total = 0;
+        int size = searchCar(count, carName, category, carNum, dateRent, dateReturn).size();
+        total += size;
+        while (size == 20) {
+            count++;
+            size = searchCar(count, carName, category, carNum, dateRent, dateReturn).size();
+            total += size;
+        }
+
         return (int) Math.ceil(total * 1.0 / numberOfCarAPage);
     }
 
-    public Vector<CarByName> searchCar(int page, String carName, String categoryId, int carNum, String dateRent, String dateReturn) throws Exception { 
+    public Vector<CarByName> searchCar(int page, String carName, String categoryId, int carNum, String dateRent, String dateReturn) throws Exception {
         Vector<CarDTO> list = new Vector<>();
         Vector<CarByName> cbnlist = new Vector<>();
         try {
@@ -78,9 +166,11 @@ public class CarDAO implements Serializable {
                 int year = rs.getInt("year");
                 String cateID = rs.getString("categoryID");
                 int noOfSeats = rs.getInt("noOfSeats");
-                String img  = rs.getString("img");
+                String img = rs.getString("img");
                 CarByName car = new CarByName(cateID, name, carId, year);
-                car.setImg(img); car.setNoOfSeats(noOfSeats);car.setFuel(rs.getString("fuel"));
+                car.setImg(img);
+                car.setNoOfSeats(noOfSeats);
+                car.setFuel(rs.getString("fuel"));
                 cbnlist.add(car);
             }
             //Step 2:
@@ -127,9 +217,11 @@ public class CarDAO implements Serializable {
     }
 
     private Vector<CarByName> checkQuantity(String dateRent, String dateReturn, Vector<CarByName> listCar) throws Exception {
-        if(listCar.size()==0) return listCar;
+        if (listCar.size() == 0) {
+            return listCar;
+        }
         Vector<Integer> index = new Vector<>();
-        int count=0;
+        int count = 0;
         try {
             String sql = "select ID.licensePlate\n"
                     + "from invoice I, invoice_detail ID \n"

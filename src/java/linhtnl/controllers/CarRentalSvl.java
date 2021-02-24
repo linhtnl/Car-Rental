@@ -7,10 +7,6 @@ package linhtnl.controllers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.Vector;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -79,13 +75,6 @@ public class CarRentalSvl extends HttpServlet {
                 }
             }
             CarByName carDetail = carList.get(index);
-            Collections.sort(carDetail.getList(), new Comparator<CarDTO>() {
-                @Override
-                public int compare(CarDTO o1, CarDTO o2) {
-                    return Double.compare(o1.getPrice(), o2.getPrice());
-                }
-            ;
-            });
             url = Path.VIEW_CAR_RENTAL;
             session.setAttribute("carDetail", carDetail);
         } catch (Exception e) {
@@ -112,29 +101,39 @@ public class CarRentalSvl extends HttpServlet {
         try {
             HttpSession session = request.getSession();
             String license = request.getParameter("licensePlate");
-            String dateRent = request.getParameter("dateRent");
-            String dateReturn = request.getParameter("dateReturn");
-            Set<CarDTO> cart = (Set<CarDTO>) session.getAttribute("CART");
-            if (cart == null) {
-                cart = new TreeSet<>(new Comparator<CarDTO>() {
-
-                    @Override
-                    public int compare(CarDTO o1, CarDTO o2) {
-                        return o1.getLicensePlate().compareTo(o2.getLicensePlate());
-                    }
-                });
-            }
-
+            String dateRent = request.getParameter("dateRent" + license);
+            String dateReturn = request.getParameter("dateReturn" + license);
+            Vector<CarDTO> cart = (Vector<CarDTO>) session.getAttribute("CART");
+            CarByName car = (CarByName) session.getAttribute("carDetail");
             CarDTO dto = new CarDTO();
+            dto.setName(car.getCarName());
             dto.setLicensePlate(license);
             dto.setDateRent(dateRent);
             dto.setDateReturn(dateReturn);
-            cart.add(dto);
+            if (cart == null) {
+                cart = new Vector();
+            } else {
+                int flag = -1;
+                for (int i = 0; i < cart.size(); i++) {
+                    if (cart.get(i).getLicensePlate().equals(license)) {
+                        flag = i;
+                    }
+                }
+                if (flag != -1) {
+                    cart.removeElementAt(flag);
+                }
+            }
 
-            System.out.println("Cartsize: " + cart.size());
+            cart.add(dto);
+            System.out.println("-----Cart--------");
+            for (CarDTO dt : cart) {
+                System.out.println(dt.getLicensePlate());
+            }
+            System.out.println("--------------");
             session.setAttribute("CART", cart);
             url = Path.VIEW_CAR_RENTAL;
         } catch (Exception r) {
+            r.printStackTrace();
             log("ERROR at CarRentalSvl: " + r.getMessage());
         } finally {
             response.sendRedirect(url);

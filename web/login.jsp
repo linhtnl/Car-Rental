@@ -43,7 +43,7 @@
                     <div id="login-column" class="col-md-6">
                         <div id="login-box" class="col-md-12">
                             <form  action="LoginSvl" method="post" id="demo-form"> 
-                                <br><br>
+                                <br>
                                 <div class="form-group">
                                     <label for="email" class="text-info" >Email:</label><br>
                                     <input type="text" name="email" id="email" class="form-control" required="" value="${sessionScope.ACC.email}">
@@ -52,50 +52,36 @@
                                 <div class="form-group">
                                     <label for="password" class="text-info">Password:</label><br>
                                     <input type="password" name="password" id="password" class="form-control" required="" value="${sessionScope.ACC.password}">
-
                                 </div>
-
-
-
-
                                 <div class="form-group">
-                                    
-                                    <a href="register.jsp" >Create new account</a><br><br>
+                                    <div class="row">
+                                        <div class="col"><a href="register.jsp" >Create new account</a></div>
+                                        <div class="col"><i><font color="red">
+                                                ${sessionScope.ACC.password_Error} ${sessionScope.ACC.accountError} </i></div> 
+                                    </div>
+                                    <br>
+                                    <!-- reCAPTCHA -->
+                                    <div class="g-recaptcha"
+                                         data-sitekey="6LcX7EkaAAAAAFfunBTq3DspHw9GAQrMy3zLzG2H"></div><br>
                                     <button class="btn btn-info btn-md" style="margin-left: 30%"><a href="index.jsp" style="color:white;text-decoration: none;">Back</a></button>
-                                    <button class="g-recaptcha btn btn-info btn-md" 
-                                            data-sitekey="6Lc9RkkaAAAAAFKIO8emW3AiCmVq1Li-JJdazY49" 
-                                            data-callback='onSubmit' 
-                                            data-action='submit' style="margin-left: 50%;margin-top: -69px">Login </button>
-                                  
+
+
+                                    <button type="submit"  style="margin-left: 50%;margin-top: -69px" class="btn btn-primary">Login </button>
+
                                 </div>
                             </form>
-                            <span><i><font color="red">
-                                    ${sessionScope.ACC.password_Error} ${sessionScope.ACC.accountError} </i>
-                            </span>
                             <span>
+                            </span>       
 
-                            </span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </body>
-    <script>
-        function onClick(e) {
-            e.preventDefault();
-            grecaptcha.ready(function() {
-                grecaptcha.execute('6Lc9RkkaAAAAAFKIO8emW3AiCmVq1Li-JJdazY49', {action: 'submit'}).then(function(token) {
-                    // Add your logic to submit to your backend server here.
-                });
-            });
-        }
-    </script>
-    <script src="https://www.google.com/recaptcha/api.js?render=6Lc9RkkaAAAAAFKIO8emW3AiCmVq1Li-JJdazY49"></script>
-    <script src="https://www.google.com/recaptcha/api.js"></script>
-    <script>
-        function onSubmit(token) {
-            document.getElementById("demo-form").submit();
-        }
-    </script>
+    <!-- reCAPTCHA Libary -->
+    <script src='https://www.google.com/recaptcha/api.js?hl=en'></script>
+
+
 </html>

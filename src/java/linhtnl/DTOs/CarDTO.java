@@ -14,16 +14,29 @@ import java.io.Serializable;
 public class CarDTO implements Serializable{
 
     private String carId, name, color, categoryId,licensePlate,pickup,returnLocation,dateRent,dateReturn;
-    private int year, totalCar;
+    private int year, totalCar,rating;
     private float price,rateAvg;
-
+    private boolean available;
+    
     public CarDTO(String color, String licensePlate, float price) {
         this.color = color;
         this.licensePlate = licensePlate;
         this.price = price;
+        available=true;
     }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+
     
     public CarDTO() {
+        available=true;
     }
 
     public CarDTO(String carId, String name, String color, String categoryId, int year, float price,String licensePlate) {
@@ -34,8 +47,17 @@ public class CarDTO implements Serializable{
         this.year = year;
         this.licensePlate=licensePlate;
         this.price = price;
+        available=true;
     }
 
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+    
     public String getDateRent() {
         return dateRent;
     }
@@ -56,7 +78,7 @@ public class CarDTO implements Serializable{
         return licensePlate;
     }
 
-    public void setReturnLocation(String returnLocation) {
+    public void setReturnLocation(String returnLocation) {    
         this.returnLocation = returnLocation;
     }
 
@@ -144,4 +166,13 @@ public class CarDTO implements Serializable{
         this.price = price;
     }
 
+    @Override
+    public String toString() {
+        return "----------"+this.licensePlate+"----------"+
+                "\nDate rent: "+this.dateRent+
+                "\nDate return: "+this.dateReturn+
+                "\nStatus: "+this.isAvailable()+
+                "\n----------------------";
+    }
+    
 }

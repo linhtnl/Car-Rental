@@ -5,27 +5,28 @@
  */
 package linhtnl.controllers;
 
+import linhtnl.recaptcha.VerifyUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Vector;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import linhtnl.DTOs.Account;
-import linhtnl.DTOs.CarDTO;
+
 import linhtnl.daos.AccountDAO;
 import linhtnl.daos.CarDAO;
 import linhtnl.util.Path;
-import linhtnl.util.PathAdmin;
-import linhtnl.util.PathUser;
 
 /**
  *
  * @author ASUS
  */
 public class LoginSvl extends HttpServlet {
+
+    private static final long serialVersionUID = 958900029856081978L;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -65,7 +66,8 @@ public class LoginSvl extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        //processRequest(request, response);
+
     }
 
     /**
@@ -94,22 +96,27 @@ public class LoginSvl extends HttpServlet {
             Account acc = new Account();
             acc.setEmail(email);
             acc.setPassword(password);
-
             if (check == 1) {
                 acc = dao.getAccount(email);
                 if (acc.getStatus().equalsIgnoreCase("New")) {
                     acc.setAccountError("This account is not active yet");
                 } else if (acc.getStatus().equalsIgnoreCase("Active")) {
-                    //SET LIST AGAIN
-                    //--SET LIST
-                    //--SET PAGE NUM
-                    //--SET TOTAL PAGE
-                    CarDAO cDao = new CarDAO();
-                    session.setAttribute("listCar", cDao.getAllCar(1));
-                    url = Path.USER_HOME;                  
-                    session.setAttribute("totalPage", cDao.getTotalPageByCarName());
-                    session.setAttribute("pageNum", 1);
-
+                    String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
+                    // Verify CAPTCHA.
+//                    boolean valid = VerifyUtils.verify(gRecaptchaResponse);
+//                    if (!valid) {
+//                        acc.setAccountError("Captcha invalid!");
+//                    } else {
+                        //SET LIST AGAIN
+                        //--SET LIST
+                        //--SET PAGE NUM
+                        //--SET TOTAL PAGE
+                        CarDAO cDao = new CarDAO();
+                        session.setAttribute("listCar", cDao.getAllCar(1));
+                        url = Path.USER_HOME;
+                        session.setAttribute("totalPage", cDao.getTotalPageByCarName());
+                        session.setAttribute("pageNum", 1);
+                    //}
                 }
             } else if (check == 0) {
                 acc.setPassword_Error("Wrong password!");
@@ -117,9 +124,7 @@ public class LoginSvl extends HttpServlet {
                 acc.setAccountError("This account is not found!");
             }
             session.setAttribute("ACC", acc);
-
         } catch (Exception e) {
-            e.printStackTrace();
             log("ERROR at LoginSvl: " + e.getMessage());
         } finally {
             response.sendRedirect(url);
