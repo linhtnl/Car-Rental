@@ -120,7 +120,7 @@ public class InvoiceDAO {
                 list.add(i);
             }
             for (Invoice i : list) {
-                sql = "select  ID.licensePlate,ID.price,dateRent,dateReturn,ID.pickupLocation,ID.returnLocation,C.name\n"
+                sql = "select  ID.licensePlate,ID.price,dateRent,dateReturn,C.name\n"
                         + "from invoice_detail ID, Car C, Car_Detail CD\n"
                         + "where C.CarId = CD.CarID and CD.licensePlate = ID.licensePlate and  invoiceId = '" + i.getId() + "'   ";
                 pst = con.prepareStatement(sql);
@@ -131,17 +131,7 @@ public class InvoiceDAO {
                     dto.setLicensePlate(rs.getString("licensePlate"));
                     dto.setPrice(rs.getFloat("price"));
                     dto.setDateRent(rs.getString("dateRent"));
-                    dto.setDateReturn(rs.getString("dateReturn"));
-                    String p = rs.getString("pickupLocation");
-                    if (p.equalsIgnoreCase("null")) {
-                        p = "Unknown";
-                    }
-                    dto.setPickup(p);
-                    String r = rs.getString("returnLocation");
-                    if (r.equalsIgnoreCase("null")) {
-                        r = "Unknown";
-                    }
-                    dto.setReturnLocation(r);
+                    dto.setDateReturn(rs.getString("dateReturn"));                                                         
                     dto.setName(rs.getString("name"));
                     sublist.add(dto);
                 }
@@ -169,7 +159,7 @@ public class InvoiceDAO {
                 invoice.setDiscount(rs.getInt("percentage")); //Set if has voucher
             }
             //detail
-            sql = "select  ID.licensePlate,ID.price,dateRent,dateReturn,ID.pickupLocation,ID.returnLocation,C.name\n"
+            sql = "select  ID.licensePlate,ID.price,dateRent,dateReturn,C.name\n"
                     + "from invoice_detail ID, Car C, Car_Detail CD\n"
                     + "where C.CarId = CD.CarID and CD.licensePlate = ID.licensePlate and  invoiceId = '" + id + "'   ";
             System.out.println(sql);
@@ -182,16 +172,6 @@ public class InvoiceDAO {
                 dto.setPrice(rs.getFloat("price"));
                 dto.setDateRent(rs.getString("dateRent"));
                 dto.setDateReturn(rs.getString("dateReturn"));
-                String p = rs.getString("pickupLocation");
-                if (p.equalsIgnoreCase("null")) {
-                    p = "Unknown";
-                }
-                dto.setPickup(p);
-                String r = rs.getString("returnLocation");
-                if (r.equalsIgnoreCase("null")) {
-                    r = "Unknown";
-                }
-                dto.setReturnLocation(r);
                 dto.setName(rs.getString("name"));
                 sublist.add(dto);
             }
@@ -230,7 +210,7 @@ public class InvoiceDAO {
                 if (rs.next()) {
                     i.setDiscount(rs.getInt("percentage"));
                 }
-                sql = "select  ID.licensePlate,ID.price,dateRent,dateReturn,ID.pickupLocation,ID.returnLocation,C.name\n"
+                sql = "select  ID.licensePlate,ID.price,dateRent,dateReturn,C.name\n"
                         + "from invoice_detail ID, Car C, Car_Detail CD\n"
                         + "where C.CarId = CD.CarID and CD.licensePlate = ID.licensePlate and  invoiceId = '" + i.getId() + "'   ";
                 pst = con.prepareStatement(sql);
@@ -241,18 +221,7 @@ public class InvoiceDAO {
                     dto.setLicensePlate(rs.getString("licensePlate"));
                     dto.setPrice(rs.getFloat("price"));
                     dto.setDateRent(rs.getString("dateRent"));
-                    dto.setDateReturn(rs.getString("dateReturn"));
-
-                    String p = rs.getString("pickupLocation");
-                    if (p.equalsIgnoreCase("null")) {
-                        p = "Unknown";
-                    }
-                    dto.setPickup(p);
-                    String r = rs.getString("returnLocation");
-                    if (r.equalsIgnoreCase("null")) {
-                        r = "Unknown";
-                    }
-                    dto.setReturnLocation(r);
+                    dto.setDateReturn(rs.getString("dateReturn"));           
                     dto.setName(rs.getString("name"));
                     sublist.add(dto);
                 }

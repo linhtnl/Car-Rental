@@ -107,10 +107,10 @@ public class CartManagementSvl extends HttpServlet {
                         VoucherDAO vDAO = new VoucherDAO();
                         Voucher voucher = vDAO.getVoucher(voucherId);
                         session.setAttribute("voucher", null);
-                        if(voucher.isAvailable()==false)
-                            voucherId=null;
-                        else{
-                            voucherId="\'"+voucherId+"\'";
+                        if (voucher.isAvailable() == false) {
+                            voucherId = null;
+                        } else {
+                            voucherId = "\'" + voucherId + "\'";
                         }
                         String id = dao.checkout(cart, ACC.getEmail(), voucherId);
                         if (!id.equals("")) {
@@ -128,11 +128,16 @@ public class CartManagementSvl extends HttpServlet {
                         dto = dao.checkAvailable(dto); //set status is available for dto
                     }
                     String voucherId = request.getParameter("voucher");
-                    VoucherDAO vDAO = new VoucherDAO();
-                    Voucher voucher = vDAO.getVoucher(voucherId);
+                    Voucher voucher = null;
+                    if (!voucherId.trim().equals("")) {
+
+                        VoucherDAO vDAO = new VoucherDAO();
+                        voucher = vDAO.getVoucher(voucherId);
+                    }
+                    System.out.println(voucher);
                     session.setAttribute("voucher", voucher);
                     url = Path.VIEW_CART;
-                    flag = 1;        
+                    flag = 1;
                 } else if (action.equals("remove")) {
                     String license = request.getParameter("licensePlate");
                     int index = -1;
@@ -149,7 +154,7 @@ public class CartManagementSvl extends HttpServlet {
                         cart = dao.getInfomationOfCars(cart);
                         Voucher v = new Voucher();
                         v.setAvailable(true);
-                        session.setAttribute("voucher",v);
+                        session.setAttribute("voucher", v);
                         session.setAttribute("CART", cart);
                     }
                     url = Path.VIEW_CART;

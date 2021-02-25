@@ -71,14 +71,17 @@
                                     <td id="price${counter.count}">$${dto.price}</td>
                                     <td>${dto.color}</td>
                                     <td>
-                                        <c:if test="${empty dto.pickup}"><c:set var="pick" value="Unknow"/></c:if>
-                                        <c:if test="${not empty dto.pickup}"><c:set var="pick" value="${dto.pickup}"/></c:if>
-                                        <c:if test="${empty dto.returnLocation}"><c:set var="returnL" value="Unknow"/></c:if>
-                                        <c:if test="${not empty dto.returnLocation}"><c:set var="returnL" value="${dto.returnLocation}"/></c:if>
-                                        <h6 id="DateRent${counter.count}">Date Rent: ${dto.dateRent}</h6><br>
-                                        <h6 id="DateReturn${counter.count}">Date Return: ${dto.dateReturn}</h6><br>
-                                        <h6>Pickup at <b>${pick}</b></h6><br>
-                                        <h6>Return at <b>${returnL}</b></6>
+                                        <h6>Car Location:
+                                        <c:if test="${empty dto.location}">
+                                        Unknown
+                                    </c:if>
+                                        <c:if test="${not empty dto.location}">
+                                        ${dto.location}
+                                    </c:if>
+                                        </h6>
+                                        <h6 id="DateRent${counter.count}">Date Rent: ${dto.dateRent}</h6>
+                                        <h6 id="DateReturn${counter.count}">Date Return: ${dto.dateReturn}</h6>
+                                   
                                     </td>
                                     <td>
                                         <div id="totalDay${counter.count}">hi</div>
@@ -101,10 +104,10 @@
                 <div class="container linhclass">
                     <div class="row">
                         <div class="col"><b>Voucher  </b><input type="text" name="voucher" value="${sessionScope.voucher.id}"/>
-                            <c:if test="${empty sessionScope.voucher || sessionScope.voucher.available == true }">
+                            <c:if test="${sessionScope.voucher == null|| sessionScope.voucher.available == true }">
                                 <i style="color:red"></i>
                             </c:if>
-                            <c:if test="${sessionScope.voucher.available != true }">
+                            <c:if test="${sessionScope.voucher.available == false }">
                                 <i style="color:red">Sorry, this voucher not exist or expire!</i>
                             </c:if>
 
@@ -129,6 +132,8 @@
                                     <div class="modal-content">
                                         <div class="container"><br>
                                             <b><h4 class="modal-title">Check your cart</h4></b>
+                                            <p><i>*After Booking successful, the car owner's will call you to confirm the pickup location and return location later.
+                                                Free first 10 km, or you both can deal the shipping fee.</i></p>
                                         </div>
                                         <div class="modal-body">
                                             <table class="table table-striped">
@@ -146,14 +151,10 @@
                                                         <tr>
                                                             <td>${dto.licensePlate}<br>(${dto.name})</td>
                                                             <td>
-                                                                <c:if test="${empty dto.pickup}"><c:set var="pick" value="Unknow"/></c:if>
-                                                                <c:if test="${not empty dto.pickup}"><c:set var="pick" value="${dto.pickup}"/></c:if>
-                                                                <c:if test="${empty dto.returnLocation}"><c:set var="returnL" value="Unknow"/></c:if>
-                                                                <c:if test="${not empty dto.returnLocation}"><c:set var="returnL" value="${dto.returnLocation}"/></c:if>
+                                                              
                                                                 <h6 id="DateRent${counter.count}">Date Rent: ${dto.dateRent}</h6><br>
                                                                 <h6 id="DateReturn${counter.count}">Date Return: ${dto.dateReturn}</h6><br>
-                                                                <h6>Pickup at <b>${pick}</b></h6><br>
-                                                                <h6>Return at <b>${returnL}</b></6>
+                                                             
                                                             </td>
                                                             <td>
                                                                 <div id="totalDayC${counter.count}">hi</div>
@@ -179,7 +180,10 @@
 
                                             <div class="container" style="margin-left: 60%">
                                                 <h5 id="TotalMoneyC">Subtotal: $0 </h5><br>
-                                                <h5 id='discount'>Discount: ${sessionScope.voucher.percentage}%</h5><br>
+                                                <h5 id='discount'>Discount: 
+                                                    <c:if test="${sessionScope.voucher == null}">0</c:if>
+                                                    <c:if test="${not empty sessionScope.voucher }">${sessionScope.voucher.percentage}</c:if>
+                                                    %</h5><br>
                                                 <h5 id="finalCost">Total: $0</h5>
                                             </div><br>
                                             <div class="modal-footer">

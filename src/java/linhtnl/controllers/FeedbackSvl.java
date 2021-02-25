@@ -131,7 +131,7 @@ public class FeedbackSvl extends HttpServlet {
                 }
             }
         } catch (Exception e) {
-            log("ERROR at doPostof FeedbackSvl:" + e.getMessage());
+            log("ERROR at doPost of FeedbackSvl:" + e.getMessage());
         } finally {
             response.sendRedirect(url);
         }

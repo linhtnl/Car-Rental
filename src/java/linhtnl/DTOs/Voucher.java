@@ -50,6 +50,11 @@ public class Voucher implements Serializable{
     public void setPercentage(int percentage) {
         this.percentage = percentage;
     }
+
+    @Override
+    public String toString() {
+        return id+" - "+percentage;
+    }
     
     
 }

@@ -109,8 +109,7 @@
                             <th>License Plate</th>
                             <th>Price per Day</th>
                             <th>Color</th>
-                            <th>Pickup Location</th>
-                            <th>Return Location </th>
+                            <th>Car Location</th>
                             <th>Rent</th>
                         </tr>
                     </thead>
@@ -121,13 +120,14 @@
                                 <td>$ ${dto.price}</td>
                                 <td>${dto.color}</td>
                                 <td>
-                                    <c:if test="${ empty dto.pickup}"> Unknown </c:if>
-                                    <c:if test="${ not empty dto.pickup}"> ${dto.pickup} </c:if>
+                                    <c:if test="${empty dto.location}">
+                                        Unknown
+                                    </c:if>
+                                        <c:if test="${not empty dto.location}">
+                                        ${dto.location}
+                                    </c:if>
                                     </td>
-                                    <td>
-                                    <c:if test="${ empty dto.returnLocation}"> Unknown </c:if>
-                                    <c:if test="${ not empty dto.returnLocation}"> ${dto.returnLocation} </c:if>
-                                    </td>
+                                  
                                     <td>
                                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#my${counter.count}">
                                         Rent

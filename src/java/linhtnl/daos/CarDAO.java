@@ -44,20 +44,20 @@ public class CarDAO implements Serializable {
         try {
             String sql = "select * \n"
                     + "from invoice_detail\n"
-                    + "where licensePlate = '" + dto.getLicensePlate() + "' and dateRent <='" + dto.getDateRent() + "' ";
+                    + "where licensePlate = '" + dto.getLicensePlate() + "'  and dateRent <='"+dto.getDateRent()+"'  and dateRent >='"+dto.getDateReturn()+"'";
             con = LinhConnection.getConnection();
             pst = con.prepareStatement(sql);
             rs = pst.executeQuery();
             if (!rs.next()) {
                 sql = "select * \n"
                         + "from invoice_detail\n"
-                        + "where licensePlate = '" + dto.getLicensePlate() + "' and dateReturn >='" + dto.getDateReturn() + "'";
+                        + "where licensePlate = '" + dto.getLicensePlate() + "'  and dateRent >='"+dto.getDateRent()+"'  and dateRent <='"+dto.getDateReturn()+"'";
                 pst = con.prepareStatement(sql);
                 rs = pst.executeQuery();
                 if (!rs.next()) {
                     sql = "select * \n"
                             + "from invoice_detail\n"
-                            + "where licensePlate = '" + dto.getLicensePlate() + "' and dateRent >='" + dto.getDateRent() + "'  and dateReturn <='" + dto.getDateReturn() + "'";
+                            + "where licensePlate = '" + dto.getLicensePlate() + "' and  '"+dto.getDateRent()+"'>= dateRent and '"+dto.getDateReturn()+"' <= dateReturn and dateReturn >= '"+dto.getDateRent()+"' and dateReturn <= '"+dto.getDateReturn()+"'";
                     pst = con.prepareStatement(sql);
                     rs = pst.executeQuery();
                     if (rs.next()) {
@@ -90,8 +90,8 @@ public class CarDAO implements Serializable {
             pst = con.prepareStatement(sql);
             count += pst.executeUpdate();
             for (CarDTO dto : cart) {
-                sql = "INSERT INVOICE_DETAIL(invoiceId, licensePlate,price, dateRent,dateReturn, pickupLocation, returnLocation)"
-                        + "VALUES('" + id + "','" + dto.getLicensePlate() + "'," + dto.getPrice() + ",'" + dto.getDateRent() + "','" + dto.getDateReturn() + "','" + dto.getPickup() + "','" + dto.getReturnLocation() + "')";
+                sql = "INSERT INVOICE_DETAIL(invoiceId, licensePlate,price, dateRent,dateReturn)"
+                        + "VALUES('" + id + "','" + dto.getLicensePlate() + "'," + dto.getPrice() + ",'" + dto.getDateRent() + "','" + dto.getDateReturn() +"')";
                 pst = con.prepareStatement(sql);
                 count += pst.executeUpdate();
             }
@@ -112,14 +112,13 @@ public class CarDAO implements Serializable {
         try {
             con = LinhConnection.getConnection();
             for (CarDTO dto : cart) {
-                String sql = "select price,color,pickupLocation,returnLocation from Car_Detail where licensePlate like '" + dto.getLicensePlate() + "'";
+                String sql = "select price,color,location from Car_Detail where licensePlate like '" + dto.getLicensePlate() + "'";
                 pst = con.prepareStatement(sql);
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     dto.setColor(rs.getString("color"));
-                    dto.setPrice(rs.getFloat("price"));
-                    dto.setPickup(rs.getString("pickupLocation"));
-                    dto.setReturnLocation(rs.getString("returnLocation"));
+                    dto.setPrice(rs.getFloat("price"));   
+                    dto.setLocation(rs.getString("location"));
                 }
             }
         } finally {
@@ -175,7 +174,7 @@ public class CarDAO implements Serializable {
             }
             //Step 2:
             for (CarByName car : cbnlist) {
-                sql = "SELECT licensePlate, color,price, pickupLocation, returnLocation\n"
+                sql = "SELECT licensePlate, color,price\n"
                         + "FROM Car_Detail \n"
                         + "where CarID='" + car.getCarID() + "'";
                 pst = con.prepareStatement(sql);
@@ -185,8 +184,6 @@ public class CarDAO implements Serializable {
                     String licensePlate = rs.getString("licensePlate");
                     float price = rs.getFloat("price");
                     CarDTO dto = new CarDTO(color, licensePlate, price);
-                    dto.setPickup(rs.getString("pickupLocation"));
-                    dto.setReturnLocation(rs.getString("returnLocation"));
                     list.add(dto);
                 }
                 car.setList(list);
@@ -308,7 +305,7 @@ public class CarDAO implements Serializable {
             }
             //Get list plates by CarId
             for (CarByName car : cbnlist) {
-                sql = "select licensePlate,price,pickupLocation,color,returnLocation from Car_Detail where CarID=?";
+                sql = "select licensePlate,price,color,location from Car_Detail where CarID=?";
                 pst = con.prepareStatement(sql);
                 pst.setString(1, car.getCarID());
                 rs = pst.executeQuery();
@@ -316,9 +313,8 @@ public class CarDAO implements Serializable {
                     String licensePlate = rs.getString("licensePlate");
                     float price = rs.getFloat("price");
                     String color = rs.getString("color");
-                    CarDTO dto = new CarDTO(color, licensePlate, price);
-                    dto.setPickup(rs.getString("pickupLocation"));
-                    dto.setReturnLocation(rs.getString("returnLocation"));
+                    CarDTO dto = new CarDTO(color, licensePlate, price);   
+                    dto.setLocation(rs.getString("location"));
                     result.add(dto);
                 }
                 car.setList(result);

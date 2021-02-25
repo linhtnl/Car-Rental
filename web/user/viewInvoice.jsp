@@ -96,8 +96,7 @@ Author     : ASUS
                                                                         <th>Price</th>
                                                                         <th>Date Rent</th>
                                                                         <th>Date Return</th>
-                                                                        <th>Pickup</th>
-                                                                        <th>Return Location</th>
+                                                                      
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -110,8 +109,7 @@ Author     : ASUS
                                                                             <td>${o.price}</td>
                                                                             <td>${o.dateRent}</td>
                                                                             <td>${o.dateReturn}</td>                                        
-                                                                            <td>${o.pickup}</td>
-                                                                            <td>${o.returnLocation}</td>
+                                                                           
                                                                         </tr>      
                                                                     </c:forEach>
                                                                 </tbody>
