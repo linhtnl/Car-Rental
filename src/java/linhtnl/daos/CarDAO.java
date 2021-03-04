@@ -305,7 +305,8 @@ public class CarDAO implements Serializable {
             }
             //Get list plates by CarId
             for (CarByName car : cbnlist) {
-                sql = "select licensePlate,price,color,location from Car_Detail where CarID=?";
+                sql = "select licensePlate,price,color,location,avg"
+                        + " from Car_Detail where CarID=?";
                 pst = con.prepareStatement(sql);
                 pst.setString(1, car.getCarID());
                 rs = pst.executeQuery();
@@ -315,6 +316,7 @@ public class CarDAO implements Serializable {
                     String color = rs.getString("color");
                     CarDTO dto = new CarDTO(color, licensePlate, price);   
                     dto.setLocation(rs.getString("location"));
+                    dto.setRateAvg(rs.getFloat("avg"));
                     result.add(dto);
                 }
                 car.setList(result);

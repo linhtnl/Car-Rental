@@ -61,18 +61,14 @@
                                     </div>
                                     <br>
                                     <!-- reCAPTCHA -->
-                                    <div class="g-recaptcha"
+                                    <div class="g-recaptcha" 
                                          data-sitekey="6LcX7EkaAAAAAFfunBTq3DspHw9GAQrMy3zLzG2H"></div><br>
                                     <button class="btn btn-info btn-md" style="margin-left: 30%"><a href="index.jsp" style="color:white;text-decoration: none;">Back</a></button>
-
-
                                     <button type="submit"  style="margin-left: 50%;margin-top: -69px" class="btn btn-primary">Login </button>
-
                                 </div>
                             </form>
                             <span>
                             </span>       
-
                         </div>
                     </div>
                 </div>
@@ -82,6 +78,5 @@
     </body>
     <!-- reCAPTCHA Libary -->
     <script src='https://www.google.com/recaptcha/api.js?hl=en'></script>
-
-
+  
 </html>

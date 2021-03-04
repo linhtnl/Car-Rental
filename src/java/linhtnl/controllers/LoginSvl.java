@@ -102,21 +102,21 @@ public class LoginSvl extends HttpServlet {
                     acc.setAccountError("This account is not active yet");
                 } else if (acc.getStatus().equalsIgnoreCase("Active")) {
                     String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
-                    // Verify CAPTCHA.
+//                     Verify CAPTCHA.
 //                    boolean valid = VerifyUtils.verify(gRecaptchaResponse);
 //                    if (!valid) {
 //                        acc.setAccountError("Captcha invalid!");
 //                    } else {
-                        //SET LIST AGAIN
-                        //--SET LIST
-                        //--SET PAGE NUM
-                        //--SET TOTAL PAGE
+//                        SET LIST AGAIN
+//                        --SET LIST
+//                        --SET PAGE NUM
+//                        --SET TOTAL PAGE
                         CarDAO cDao = new CarDAO();
                         session.setAttribute("listCar", cDao.getAllCar(1));
                         url = Path.USER_HOME;
                         session.setAttribute("totalPage", cDao.getTotalPageByCarName());
                         session.setAttribute("pageNum", 1);
-                    //}
+//                    }
                 }
             } else if (check == 0) {
                 acc.setPassword_Error("Wrong password!");

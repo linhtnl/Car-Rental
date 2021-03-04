@@ -93,7 +93,7 @@ public class InvoiceManagementSvl extends HttpServlet {
                 if (subaction.equals("delete")) {
                     String id = request.getParameter("id");
                     if (dao.deleteInvoice(id)) {
-                        Vector<Invoice> list = dao.init();
+                        Vector<Invoice> list = dao.init(acc.getEmail());
                         session.setAttribute("listInvoice", list);
                         url = Path.VIEW_INVOICE;
                     }
@@ -110,7 +110,7 @@ public class InvoiceManagementSvl extends HttpServlet {
                     url = Path.VIEW_INVOICE;
                 }else {
                     //View invoice
-                    Vector<Invoice> list = dao.init();
+                    Vector<Invoice> list = dao.init(acc.getEmail());
                     session.setAttribute("listInvoice", list);
                     session.setAttribute("searchInfo", null);
                     url = Path.VIEW_INVOICE;

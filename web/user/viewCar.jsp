@@ -109,6 +109,7 @@
                             <th>License Plate</th>
                             <th>Price per Day</th>
                             <th>Color</th>
+                            <th>Rating</th>
                             <th>Car Location</th>
                             <th>Rent</th>
                         </tr>
@@ -119,6 +120,7 @@
                                 <td>${dto.licensePlate}</td>
                                 <td>$ ${dto.price}</td>
                                 <td>${dto.color}</td>
+                                <td>${dto.rateAvg} <span class="fa fa-star" style="color:#fcba03"></span></td>
                                 <td>
                                     <c:if test="${empty dto.location}">
                                         Unknown

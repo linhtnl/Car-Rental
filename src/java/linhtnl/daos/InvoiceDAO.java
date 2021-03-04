@@ -182,13 +182,13 @@ public class InvoiceDAO {
         return invoice;
     }
 
-    public Vector<Invoice> init() throws Exception {
+    public Vector<Invoice> init(String email) throws Exception {
         Vector<Invoice> list = new Vector<>();
         try {
             String sql = "select id  ,dateSubmit , isFeedback\n"
                     + "from Invoice\n"
-                    + "where isDelete= 0\n"
-                    + "ORDER BY dateSubmit desc";
+                    + "where isDelete= 0 and email ='"+email+"'\n"
+                    + "ORDER BY id desc";
             con = LinhConnection.getConnection();
             pst = con.prepareStatement(sql);
             rs = pst.executeQuery();

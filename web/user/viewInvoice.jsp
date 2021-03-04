@@ -65,7 +65,6 @@ Author     : ASUS
                             </tr>
                         </thead>
                         <tbody>
-
                             <c:forEach items="${sessionScope.listInvoice}" var="dto" varStatus="counter">
                                 <tr>
                                     <td>${dto.id}</td>

@@ -125,7 +125,7 @@ public class FeedbackSvl extends HttpServlet {
                     //save in database
                     InvoiceDAO dao = new InvoiceDAO();
                     if (dao.feedback(invoice)) {
-                        session.setAttribute("listInvoice", dao.init());
+                        session.setAttribute("listInvoice", dao.init(acc.getEmail()));
                         url = Path.VIEW_INVOICE;
                     }
                 }

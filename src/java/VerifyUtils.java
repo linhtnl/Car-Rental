@@ -1,5 +1,13 @@
 package linhtnl.recaptcha;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.net.ssl.HttpsURLConnection;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -10,14 +18,7 @@ package linhtnl.recaptcha;
  *
  * @author ASUS
  */
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.net.ssl.HttpsURLConnection;
-import linhtnl.recaptcha.MyConstants;
+
 public class VerifyUtils {
 
     public static final String SITE_VERIFY_URL = //
